@@ -1,0 +1,98 @@
+# linuxmuster.net environment
+# thomas@linuxmuster.net
+# 27.02.2014
+#
+
+# variables
+ADMINUSER="opsiadmin"
+ADMINGROUP="opsiadmin"
+
+OPSISYSDIR="/etc/opsi"
+PCKEYS="$OPSISYSDIR/pckeys"
+OPSICONFIGDIR="/var/lib/opsi/config"
+OPSICLIENTSDIR="$OPSICONFIGDIR/clients"
+OPSICONFIG="$OPSICONFIGDIR/config.ini"
+OPSIPKGS="opsi-depotserver opsi-configed opsi-atftpd"
+OPSIKEYURL="http://download.opensuse.org/repositories/home:/uibmz:/opsi:/opsi40/xUbuntu_12.04/Release.key"
+
+SHAREDIR="/usr/share/linuxmuster-opsi"
+DATADIR="/var/lib/linuxmuster-opsi"
+WIMPORTDATA="$DATADIR/workstations"
+SETTINGS="$DATADIR/settings"
+IFACES_TGT="/etc/network/interfaces"
+IFACES_TPL="$SHAREDIR/interfaces"
+HOSTS_TGT="/etc/hosts"
+HOSTS_TPL="$SHAREDIR/hosts"
+PRODCNF_TGT="$OPSISYSDIR/opsi-product-updater.conf"
+PRODCNF_TPL="$SHAREDIR/opsi-product-updater.conf"
+OPSILIST="$SHAREDIR/opsi.list"
+SOURCESLISTDIR="/etc/apt/sources.list.d"
+SMBCONF="$SHAREDIR/smb.conf"
+SUDOERS="$SHAREDIR/sudoers"
+
+
+# functions
+
+# parse command line options
+getopt() {
+ until [ -z "$1" ]; do
+  if [ ${1:0:2} = "--" ]; then
+   tmp=${1:2}               # Strip off leading '--' . . .
+   parameter=${tmp%%=*}     # Extract name.
+   value=${tmp##*=}         # Extract value.
+   eval $parameter=$value
+   # [ -z "$parameter" ] && parameter=yes
+  fi
+  shift
+ done
+}
+
+# set passwords
+set_opsipassword(){
+ id "$ADMINUSER" &> /dev/null || (echo "$ADMINUSER account does not exist!" ; return 1)
+ local i
+ local password
+ local rpassword
+ for i in root "$ADMINUSER"; do
+  echo
+  echo "### $i password ###"
+  password=""
+  rpassword=""
+  while [ -z "$password" ]; do
+   stty -echo
+   read -p "Please enter password for $i: " password; echo
+   stty echo
+   stty -echo
+   read -p "Please re-enter password for $i: " rpassword; echo
+   stty echo
+   if [ "$password" != "$rpassword" ]; then
+    echo "Passwords do not match!"
+    password=""
+   fi
+   rpassword=""
+  done
+  echo "${i}:${password}" | chpasswd || (echo "Failed to set unix password for $i!" ; return 1)
+ done
+ echo -e "${password}\n${password}\n" | smbpasswd -a -s "$ADMINUSER" || (echo "Failed to set samba password!" ; return 1)
+ echo -e "${password}\n${password}\n" | opsi-admin -d task setPcpatchPassword || (echo "Failed to set pcpatch password!" ; return 1)
+ password=""
+ return 0
+}
+
+# test if necessary pkgs are installed
+pkgs_installed(){
+ local RC=0
+ echo "Looking for installed opsi packages ..."
+ for i in $OPSIPKGS; do
+  echo -n " * $i "
+  dpkg --status "$i" 2> /dev/null | grep -q "install ok installed" || RC="1"
+  if [ "$RC" = "0" ]; then
+   echo "installed ok."
+  else
+   echo "not installed."
+   break
+  fi
+ done
+ echo
+ return "$RC"
+}

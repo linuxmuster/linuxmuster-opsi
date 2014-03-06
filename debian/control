@@ -1,0 +1,15 @@
+Source: linuxmuster-opsi
+Section: debian-linuxmuster
+Priority: optional
+Maintainer: Thomas Schmitt <thomas@linuxmuster.net>
+Build-Depends: debhelper (>= 5.0.0)
+Standards-Version: 3.6.0
+
+Package: linuxmuster-opsi
+Architecture: all
+Priority: optional
+Depends: ${shlibs:Depends}, ${misc:Depends}, ipcalc, sed, grep, debconf, openssl, openssh-client, iproute, net-tools, bind9-host, hostname, mawk, bash, passwd
+Conflicts: linuxmuster-base
+Essential: no
+Description: opsi configuration scripts for linuxmuster-net on use on opsi-server.
+ This package contains opsi configuration scripts for linuxmuster-net.

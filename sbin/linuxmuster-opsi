@@ -1,0 +1,117 @@
+#!/bin/bash
+#
+# linuxmuster-opsi
+#
+# thomas@linuxmuster.net
+# 05.03.2014
+#
+
+# read linuxmuster.net environment
+. /usr/share/linuxmuster-opsi/environment || exit 1
+
+# parsing parameters
+getopt $*
+
+header(){
+ [ -n "$quiet" ] && return 0
+ local opts="$@"
+ local msg="# linuxmuster-opsi $opts # $(date) #"
+ local chars="$(echo "$msg" | wc -m)"
+ echo
+ seq -s"#" $chars | tr -d '[:digit:]'
+ echo "$msg"
+ seq -s"#" $chars | tr -d '[:digit:]'
+ echo
+}
+
+usage() {
+  header "usage"
+  echo "linuxmuster-opsi --setup [--first]"
+  echo "                 --password"
+  echo "                 --prepare"
+  echo "                 --wsimport"
+  echo "                 --reboot"
+  echo "                 --quiet"
+  echo "                 --help"
+  echo
+  echo "  setup:    Starts linuxmuster.net specific OPSI setup."
+  echo "            Together with --first param it does an initial setup"
+  echo "            with forced certificate creation. Expects the server file"
+  echo "            /var/lib/linuxmuster/network.settings under"
+  echo "            /var/lib/linuxmuster-opsi/settings."
+  echo "  password: Change opsi admin password."
+  echo "  prepare:  Installs OPSI packages and creates the opsiadmin user."
+  echo "  wsimport: Does client import, expects the server file"
+  echo "            /etc/linuxmuster/workstations under"
+  echo "            /var/lib/linuxmuster-opsi/workstations."
+  echo "  reboot:   Does a reboot finally."
+  echo "  quiet:    Minimal console output."
+  echo "  help:     Shows this help"
+  echo
+  exit 1
+}
+
+# test parameters
+[ -n "$help" ] && usage
+[ -n "$wsimport" -a -n "$prepare" ] && usage
+[ -n "$wsimport" -a -n "$setup" ] && usage
+[ -n "$wsimport" -a -n "$first" ] && usage
+[ -n "$wsimport" -a -n "$password" ] && usage
+[ -n "$prepare" -a -n "$setup" ] && usage
+[ -n "$prepare" -a -n "$first" ] && usage
+[ -n "$prepare" -a -n "$password" ] && usage
+[ -n "$password" -a -n "$setup" ] && usage
+[ -n "$password" -a -n "$first" ] && usage
+[ -z "$wsimport" -a -z "$prepare" -a -z "$setup" -a -z "$password" ] && usage
+
+# get action
+[ -n "$wsimport" ] && action="wsimport"
+[ -n "$prepare" ] && action="prepare"
+[ -n "$password" ] && action="password"
+[ -n "$setup" ] && action="setup"
+
+# logging
+LOGFILE="/var/log/linuxmuster-opsi-$action.log"
+
+RC="0"
+
+# print script header
+header "$action" | tee -a "$LOGFILE"
+
+# check if i am already running
+mypid=$$
+mypidfile=/var/run/linuxmuster-opsi-$action.pid
+if [ -e "$mypidfile" ]; then
+    echo "There is already an ipfire backup process running! Exiting!" | tee -a "$LOGFILE"
+    echo "If this is not correct you have to delete $mypidfile!" | tee -a "$LOGFILE"
+    exit 0
+fi
+echo "$mypid" > $mypidfile
+
+# exit if error occurs
+bailout(){
+ local msg="$1"
+ echo "$msg" | tee -a "$LOGFILE"
+ rm -f $mypidfile
+ header "$action" | tee -a "$LOGFILE"
+ exit 1
+}
+
+# test if workstationsimport is possible
+[ -e "$WIMPORTDATA" ] || (touch "$WIMPORTDATA" || bailout "$WIMPORTDATA not found!")
+
+# source action script
+(. $SHAREDIR/$action.sh || RC="1") | tee -a "$LOGFILE"
+
+# delete pid file
+rm -f $mypidfile
+
+# error msg
+[ "$RC" = "0" ] || bailout "Finished with error(s)!"
+header "$action" | tee -a "$LOGFILE"
+echo | tee -a "$LOGFILE"
+
+# reboot
+[ -n "$reboot" ] && reboot
+
+exit "$RC"

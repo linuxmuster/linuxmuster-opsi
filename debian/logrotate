@@ -1,0 +1,8 @@
+/var/log/linuxmuster-opsi-*.log {
+     rotate 10
+     weekly
+     compress
+     size 50k
+     missingok
+     notifempty
+}

@@ -1,0 +1,5 @@
+linuxmuster-opsi (1.0.0-0ubuntu0) opsi; urgency=low
+
+  * initial release.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Wed, 05 Mar 2014 16:34:17 +0100
