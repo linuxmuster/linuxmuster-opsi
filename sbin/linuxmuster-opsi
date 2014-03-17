@@ -82,7 +82,7 @@ header "$action" | tee -a "$LOGFILE"
 mypid=$$
 mypidfile=/var/run/linuxmuster-opsi-$action.pid
 if [ -e "$mypidfile" ]; then
-    echo "There is already an ipfire backup process running! Exiting!" | tee -a "$LOGFILE"
+    echo "There is already an linuxmuster-opsi $action process running! Exiting!" | tee -a "$LOGFILE"
     echo "If this is not correct you have to delete $mypidfile!" | tee -a "$LOGFILE"
     exit 0
 fi

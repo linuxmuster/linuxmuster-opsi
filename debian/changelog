@@ -1,3 +1,10 @@
+linuxmuster-opsi (1.0.1-0ubuntu0) opsi; urgency=low
+
+  * added dependecy to openbsd-inetd.
+  * added setup for atftpd inetd start.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Mon, 17 Mar 2014 09:04:54 +0100
+
 linuxmuster-opsi (1.0.0-0ubuntu0) opsi; urgency=low
 
   * initial release.

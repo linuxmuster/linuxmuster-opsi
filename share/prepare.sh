@@ -2,7 +2,7 @@
 # linuxmuster-opsi-prepare
 #
 # thomas@linuxmuster.net
-# 27.02.2014
+# 17.03.2014
 #
 
 # hostname must be opsi
@@ -31,9 +31,26 @@ else
 fi
 
 # copy initial configs
-cp "$SMBCONF" /etc/samba || RC="1"
-cp "$SUDOERS" /etc || RC="1"
-chmod 440 /etc/sudoers
+# samba
+if ! grep -q ^"\[opsi" "$SMBCONF_TGT"; then
+ echo "Updating $SMBCONF_TGT."
+ cp "$SMBCONF_TGT" "$SMBCONF_TPL" || RC="1"
+fi
+
+# sudoers
+if ! grep -q ^opsiconfd "$SUDOERS_TGT"; then
+ echo "Updating $SUDOERS_TGT."
+ cp "$SUDOERS_TPL" "$SUDOERS_TGT" || RC="1"
+ chmod 440 "$SUDOERS_TGT"
+fi
+
+# tftp
+if ! grep -q ^tftp "$INETDCONF_TGT"; then
+ echo "Updating $INETDCONF_TGT."
+ cp "$INETDCONF_TPL" "$INETDCONF_TGT" || RC="1"
+ service openbsd-inetd stop &> /dev/null
+ service openbsd-inetd start
+fi
 
 # opsi setup stuff
 opsi-setup --auto-configure-samba || RC="1"

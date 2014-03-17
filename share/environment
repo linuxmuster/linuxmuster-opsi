@@ -1,6 +1,6 @@
 # linuxmuster.net environment
 # thomas@linuxmuster.net
-# 27.02.2014
+# 17.03.2014
 #
 
 # variables
@@ -23,12 +23,16 @@ IFACES_TGT="/etc/network/interfaces"
 IFACES_TPL="$SHAREDIR/interfaces"
 HOSTS_TGT="/etc/hosts"
 HOSTS_TPL="$SHAREDIR/hosts"
+INETDCONF_TPL="$SHAREDIR/inetd.conf"
+INETDCONF_TGT="/etc/inetd.conf"
+SMBCONF_TGT="/etc/samba/smb.conf"
+SMBCONF_TPL="$SHAREDIR/smb.conf"
+SUDOERS_TPL="$SHAREDIR/sudoers"
+SUDOERS_TGT="/etc/sudoers"
 PRODCNF_TGT="$OPSISYSDIR/opsi-product-updater.conf"
 PRODCNF_TPL="$SHAREDIR/opsi-product-updater.conf"
 OPSILIST="$SHAREDIR/opsi.list"
 SOURCESLISTDIR="/etc/apt/sources.list.d"
-SMBCONF="$SHAREDIR/smb.conf"
-SUDOERS="$SHAREDIR/sudoers"
 
 
 # functions
