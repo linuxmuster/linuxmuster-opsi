@@ -1,3 +1,10 @@
+linuxmuster-opsi (1.0.3-0ubuntu0) opsi; urgency=low
+
+  * linuxmuster-opsi --prepare: improved dist-upgrade.
+  * opsi-product-updater.conf: excluded package uedit32 in template.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Tue, 18 Mar 2014 17:49:16 +0100
+
 linuxmuster-opsi (1.0.2-1ubuntu0) opsi; urgency=low
 
   * linuxmuster-opsi --prepare: removed update of opsi-product-updater.conf again.

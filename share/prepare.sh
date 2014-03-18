@@ -2,7 +2,7 @@
 # linuxmuster-opsi-prepare
 #
 # thomas@linuxmuster.net
-# 17.03.2014
+# 18.03.2014
 #
 
 # hostname must be opsi
@@ -10,24 +10,6 @@ if [ "$(hostname)" != "opsi" ]; then
  hostname -b opsi
  echo opsi > /etc/hostname
  sed -e "s|@@domainname@@|localhost.localdomain|g" "$HOSTS_TPL" > "$HOSTS_TGT" || RC="1"
-fi
-
-if ! pkgs_installed; then
- # copy opsi.list
- cp "$OPSILIST" "$SOURCESLISTDIR"
- # get repo key
- wget -O - "$OPSIKEYURL" | apt-key add - || bailout "Cannot install opsi repository key!"
- # install packages
- apt-get update
- apt-get -y dist-upgrade
- apt-get -y install $OPSIPKGS || bailout "Error on installing opsi packages!"
- echo "Test for installed opsi packages again ..."
- pkgs_installed &> /dev/null || bailout "Not all necessary opsi packages are installed!"
- echo "Ok."
- echo
-else
- apt-get update
- apt-get -y dist-upgrade
 fi
 
 # copy initial configs

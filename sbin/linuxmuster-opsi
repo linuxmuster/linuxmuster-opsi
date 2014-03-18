@@ -3,7 +3,7 @@
 # linuxmuster-opsi
 #
 # thomas@linuxmuster.net
-# 05.03.2014
+# 18.03.2014
 #
 
 # read linuxmuster.net environment
@@ -99,6 +99,28 @@ bailout(){
 
 # test if workstationsimport is possible
 [ -e "$WIMPORTDATA" ] || (touch "$WIMPORTDATA" || bailout "$WIMPORTDATA not found!")
+
+
+# upgrade the system in case of prepare
+dist_upgrade(){
+ apt-get update
+ apt-get -y dist-upgrade
+ if ! pkgs_installed; then
+  # copy opsi.list
+  cp "$OPSILIST" "$SOURCESLISTDIR"
+  # get repo key
+  wget -O - "$OPSIKEYURL" | apt-key add - || bailout "Cannot install opsi repository key!"
+  # install packages
+  apt-get update
+  apt-get -y install $OPSIPKGS || bailout "Error on installing opsi packages!"
+  echo "Test for installed opsi packages again ..."
+  pkgs_installed &> /dev/null || bailout "Not all necessary opsi packages are installed!"
+  echo "Ok."
+  echo
+ fi
+}
+[ "$action" = "prepare" ] && dist_upgrade | tee -a "$LOGFILE"
+
 
 # source action script
 (. $SHAREDIR/$action.sh || RC="1") | tee -a "$LOGFILE"
