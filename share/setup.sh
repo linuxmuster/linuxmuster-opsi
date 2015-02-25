@@ -2,7 +2,7 @@
 # linuxmuster-opsi-setup
 #
 # thomas@linuxmuster.net
-# 26.02.2014
+# 25.02.2015
 #
 
 # read linuxmuster.net environment
@@ -41,17 +41,27 @@ set_fqdn(){
  local RC="0"
  echo "opsi" > /etc/hostname || RC="1"
  sed -e "s|@@domainname@@|$domainname|g" "$HOSTS_TPL" > "$HOSTS_TGT" || RC="1"
- [ -e "$PCKEYS" ] && sed -i "$PCKEYS" -e "s|$MYFQDN|opsi.$domainname|g" -e "s|\..*\:|\.$domainname\:|g"
+ if [ -e "$PCKEYS" ]; then
+  sed -i "$PCKEYS" -e "s|$MYFQDN|opsi.$domainname|g" -e "s|\..*\:|\.$domainname\:|g" || RC="1"
+ else
+  RC="1"
+ fi
  # config.ini
- [ -e "$OPSICONFIG" ] && sed -e "s|$MYFQDN|opsi.$domainname|g" -i "$OPSICONFIG"
+ if [ -e "$OPSICONFIG" ]; then
+  sed -e "s|$MYFQDN|opsi.$domainname|g" -i "$OPSICONFIG" || RC="1"
+ else
+  RC="1"
+ fi
  # depot_ini
  local depot_ini="$OPSICONFIGDIR/depots/$MYFQDN.ini"
  if [ -e "$depot_ini" ]; then
   sed -e "s|$MYFQDN|opsi.$domainname|g
           s|^remoteurl .*|remoteurl = smb:\/\/opsi\/opsi_depot|g
           s|^ipaddress .*|ipaddress = $opsiip|g
-          s|^network .*|network = $MYNETWORK/$MYNETMASK|g" -i "$depot_ini"
+          s|^network .*|network = $MYNETWORK/$MYNETMASK|g" -i "$depot_ini" || RC="1"
   mv "$depot_ini" "$(dirname $depot_ini)/opsi.$domainname.ini"
+ else
+  RC="1"
  fi
  # clients
  local i
@@ -61,6 +71,17 @@ set_fqdn(){
    new_ini="$(basename "$i" | awk -F\. '{ print $1 }').$domainname.ini"
    mv "$i" "$(dirname "$i")/$new_ini"
   done
+ fi
+ return "$RC"
+}
+
+set_ip(){
+ # write ip to config.ini
+ local RC=0
+ if [ -e "$OPSICONFIG" ]; then
+  sed -e "s|https://.*|https://${opsiip}:4447/rpc\"\]|g" -i "$OPSICONFIG" || RC="1"
+ else
+  RC="1"
  fi
  return "$RC"
 }
@@ -137,6 +158,9 @@ if [ "$MYFQDN" != "opsi.$domainname" ]; then
  cert_ok=no
  set_fqdn || RC="1"
 fi
+
+# set ip in config.ini
+set_ip || RC="1"
 
 # update product config
 cp "$PRODCNF_TGT" "${PRODCNF_TGT}.linuxmuster-backup"

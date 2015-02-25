@@ -1,7 +1,21 @@
 # linuxmuster.net environment
 # thomas@linuxmuster.net
-# 17.03.2014
+# 25.02.2015
 #
+
+# get ubuntu version
+for i in 12 14; do
+ if grep -q "${i}.04" /etc/issue; then
+  ISSUE="${i}.04"
+  break
+ fi
+done
+if [ -z "$ISSUE" ]; then
+ echo "Error: Incompatible ubuntu version!"
+ exit 1
+else
+ echo "Ubuntu $ISSUE detected."
+fi
 
 # variables
 ADMINUSER="opsiadmin"
@@ -13,7 +27,7 @@ OPSICONFIGDIR="/var/lib/opsi/config"
 OPSICLIENTSDIR="$OPSICONFIGDIR/clients"
 OPSICONFIG="$OPSICONFIGDIR/config.ini"
 OPSIPKGS="opsi-depotserver opsi-configed opsi-atftpd"
-OPSIKEYURL="http://download.opensuse.org/repositories/home:/uibmz:/opsi:/opsi40/xUbuntu_12.04/Release.key"
+OPSIKEYURL="http://download.opensuse.org/repositories/home:/uibmz:/opsi:/opsi40/xUbuntu_${ISSUE}/Release.key"
 
 SHAREDIR="/usr/share/linuxmuster-opsi"
 DATADIR="/var/lib/linuxmuster-opsi"
@@ -31,9 +45,8 @@ SUDOERS_TPL="$SHAREDIR/sudoers"
 SUDOERS_TGT="/etc/sudoers"
 PRODCNF_TGT="$OPSISYSDIR/opsi-product-updater.conf"
 PRODCNF_TPL="$SHAREDIR/opsi-product-updater.conf"
-OPSILIST="$SHAREDIR/opsi.list"
+OPSILIST="$SHAREDIR/opsi.list.${ISSUE}"
 SOURCESLISTDIR="/etc/apt/sources.list.d"
-
 
 # functions
 
