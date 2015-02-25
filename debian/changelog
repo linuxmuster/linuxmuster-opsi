@@ -2,9 +2,9 @@ linuxmuster-opsi (1.0.4-0ubuntu0) opsi; urgency=low
 
   * fixed missing ip update for config.ini in setup.sh.
   * added ubuntu 14.04 support.
-  * opsi-product-updater.conf template: activated wol feature, added uib's opsi-linux repos.
+  * opsi-product-updater.conf template: activated wol feature.
 
- -- Thomas Schmitt <thomas@linuxmuster.net>  Wed, 25 Feb 2015 20:52:05 +0100
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Wed, 25 Feb 2015 21:59:52 +0100
 
 linuxmuster-opsi (1.0.3-0ubuntu0) opsi; urgency=low
 
