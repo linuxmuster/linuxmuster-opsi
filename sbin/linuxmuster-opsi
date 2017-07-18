@@ -3,7 +3,7 @@
 # linuxmuster-opsi
 #
 # thomas@linuxmuster.net
-# 18.03.2014
+# 20170717
 #
 
 # read linuxmuster.net environment
@@ -30,6 +30,12 @@ usage() {
   echo "                 --password"
   echo "                 --prepare"
   echo "                 --wsimport"
+  echo "                 --network"
+  echo "                   --iface=<interface>"
+  echo "                   --opsiip=<ipaddress>"
+  echo "                   --netmask=<netmask>"
+  echo "                   --gateway=<ipaddress>"
+  echo "                   --nameserver=<ipaddress>"
   echo "                 --reboot"
   echo "                 --quiet"
   echo "                 --help"
@@ -39,6 +45,7 @@ usage() {
   echo "            with forced certificate creation. Expects the server file"
   echo "            /var/lib/linuxmuster/network.settings under"
   echo "            /var/lib/linuxmuster-opsi/settings."
+  echo "  network:  Configure network interface. Subsequent options needed."
   echo "  password: Change opsi admin password."
   echo "  prepare:  Installs OPSI packages and creates the opsiadmin user."
   echo "  wsimport: Does client import, expects the server file"
@@ -57,18 +64,24 @@ usage() {
 [ -n "$wsimport" -a -n "$setup" ] && usage
 [ -n "$wsimport" -a -n "$first" ] && usage
 [ -n "$wsimport" -a -n "$password" ] && usage
+[ -n "$wsimport" -a -n "$network" ] && usage
 [ -n "$prepare" -a -n "$setup" ] && usage
 [ -n "$prepare" -a -n "$first" ] && usage
 [ -n "$prepare" -a -n "$password" ] && usage
+[ -n "$prepare" -a -n "$network" ] && usage
 [ -n "$password" -a -n "$setup" ] && usage
 [ -n "$password" -a -n "$first" ] && usage
-[ -z "$wsimport" -a -z "$prepare" -a -z "$setup" -a -z "$password" ] && usage
+[ -n "$password" -a -n "$network" ] && usage
+[ -n "$network" -a -n "$setup" ] && usage
+[ -n "$network" -a -n "$first" ] && usage
+[ -z "$wsimport" -a -z "$prepare" -a -z "$setup" -a -z "$password" -a -z "$network" ] && usage
 
 # get action
 [ -n "$wsimport" ] && action="wsimport"
 [ -n "$prepare" ] && action="prepare"
 [ -n "$password" ] && action="password"
 [ -n "$setup" ] && action="setup"
+[ -n "$network" ] && action="network"
 
 # logging
 LOGFILE="/var/log/linuxmuster-opsi-$action.log"
@@ -107,7 +120,7 @@ dist_upgrade(){
  apt-get -y dist-upgrade
  if ! pkgs_installed; then
   # copy opsi.list
-  cp "$OPSILIST" "$SOURCESLISTDIR"
+  sed -e "s|@@issue@@|$ISSUE|g" "$OPSILIST_TPL" > "$OPSILIST_TGT"
   # get repo key
   wget -O - "$OPSIKEYURL" | apt-key add - || bailout "Cannot install opsi repository key!"
   # install packages

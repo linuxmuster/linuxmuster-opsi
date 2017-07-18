@@ -2,15 +2,13 @@
 # linuxmuster-opsi-prepare
 #
 # thomas@linuxmuster.net
-# 18.03.2014
+# 20170717
 #
 
 # hostname must be opsi
-if [ "$(hostname)" != "opsi" ]; then
- hostname -b opsi
- echo opsi > /etc/hostname
- sed -e "s|@@domainname@@|localhost.localdomain|g" "$HOSTS_TPL" > "$HOSTS_TGT" || RC="1"
-fi
+hostname -b opsi
+echo opsi > /etc/hostname
+sed -e "s|@@domainname@@|localhost.localdomain|g" "$HOSTS_TPL" > "$HOSTS_TGT" || RC="1"
 
 # copy initial configs
 # samba
@@ -38,8 +36,11 @@ fi
 opsi-setup --auto-configure-samba || RC="1"
 opsi-setup --init-current-config || RC="1"
 opsi-setup --set-rights || RC="1"
-/etc/init.d/opsiconfd restart || RC="1"
-/etc/init.d/opsipxeconfd restart || RC="1"
+service opsipxeconfd stop
+service opsiconfd stop
+rm -f /var/run/opsi*/*.pid
+service opsiconfd start || RC="1"
+service opsipxeconfd start || RC="1"
 [ "$RC" = "0" ] || bailout "Opsi setup error!"
 
 # opsiadmin user

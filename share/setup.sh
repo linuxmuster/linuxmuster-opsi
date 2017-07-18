@@ -2,7 +2,7 @@
 # linuxmuster-opsi-setup
 #
 # thomas@linuxmuster.net
-# 25.02.2015
+# 20170717
 #
 
 # read linuxmuster.net environment
@@ -69,7 +69,7 @@ set_fqdn(){
  if ls "$OPSICLIENTSDIR"/*.ini &> /dev/null; then
   for i in "$OPSICLIENTSDIR"/*.ini; do
    new_ini="$(basename "$i" | awk -F\. '{ print $1 }').$domainname.ini"
-   mv "$i" "$(dirname "$i")/$new_ini"
+   mv "$i" "$(dirname "$i")/$new_ini" || RC="1"
   done
  fi
  return "$RC"
@@ -159,6 +159,14 @@ if [ "$MYFQDN" != "opsi.$domainname" ]; then
  set_fqdn || RC="1"
 fi
 
+# set domainname in dns search
+if [ -s "$IFACES_TGT" ]; then
+  if ! grep -w dns-search "$IFACES_TGT" | grep -q "$domainname"; then
+    sed -i "s|dns-search .*|dns-search $domainname|g" "$IFACES_TGT" || RC="1"
+    reboot="yes"
+  fi
+fi
+
 # set ip in config.ini
 set_ip || RC="1"
 
@@ -186,5 +194,8 @@ fi
 # opsi setup finally
 opsi-setup --auto-configure-samba || RC="1"
 opsi-setup --init-current-config || RC="1"
-/etc/init.d/opsiconfd restart || RC="1"
-/etc/init.d/opsipxeconfd restart || RC="1"
+service opsipxeconfd stop
+service opsiconfd stop
+rm -f /var/run/opsi*/*.pid
+service opsiconfd start || RC="1"
+service opsipxeconfd start || RC="1"

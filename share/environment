@@ -1,10 +1,10 @@
 # linuxmuster.net environment
 # thomas@linuxmuster.net
-# 25.02.2015
+# 20170717
 #
 
 # get ubuntu version
-for i in 12 14; do
+for i in 14 16; do
  if grep -q "${i}.04" /etc/issue; then
   ISSUE="${i}.04"
   break
@@ -33,7 +33,7 @@ SHAREDIR="/usr/share/linuxmuster-opsi"
 DATADIR="/var/lib/linuxmuster-opsi"
 WIMPORTDATA="$DATADIR/workstations"
 SETTINGS="$DATADIR/settings"
-IFACES_TGT="/etc/network/interfaces"
+IFACES_TGT="/etc/network/interfaces.d/linuxmuster"
 IFACES_TPL="$SHAREDIR/interfaces"
 HOSTS_TGT="/etc/hosts"
 HOSTS_TPL="$SHAREDIR/hosts"
@@ -45,8 +45,8 @@ SUDOERS_TPL="$SHAREDIR/sudoers"
 SUDOERS_TGT="/etc/sudoers"
 PRODCNF_TGT="$OPSISYSDIR/opsi-product-updater.conf"
 PRODCNF_TPL="$SHAREDIR/opsi-product-updater.conf"
-OPSILIST="$SHAREDIR/opsi.list.${ISSUE}"
-SOURCESLISTDIR="/etc/apt/sources.list.d"
+OPSILIST_TPL="$SHAREDIR/opsi.list"
+OPSILIST_TGT="/etc/apt/sources.list.d/opsi.list"
 
 # functions
 
@@ -112,4 +112,25 @@ pkgs_installed(){
  done
  echo
  return "$RC"
+}
+
+# validate ip address
+validip(){
+  local ip=$1
+  local stat=1
+  if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+    OIFS=$IFS
+    IFS='.'
+    ip=($ip)
+    IFS=$OIFS
+    [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 \
+      && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+    stat=$?
+  fi
+  return $stat
+}
+
+# validate netmask
+validmask(){
+  grep -E -q '^(254|252|248|240|224|192|128)\.0\.0\.0|255\.(254|252|248|240|224|192|128|0)\.0\.0|255\.255\.(254|252|248|240|224|192|128|0)\.0|255\.255\.255\.(254|252|248|240|224|192|128|0)' <<< "$1" && return 0 || return 1
 }

@@ -1,7 +1,17 @@
+linuxmuster-opsi (1.0.5-0ubuntu0) opsi; urgency=low
+
+  * Added support for Ubuntu 16.04, removed support for 12.04
+    (https://github.com/linuxmuster/linuxmuster-opsi/issues/1)
+  * Added cronjob for opsi-product-updater
+    (https://github.com/linuxmuster/linuxmuster-opsi/issues/2)
+  * Added network configuration option to linuxmuster-opsi.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Tue, 18 Jul 2017 10:45:55 +0200
+
 linuxmuster-opsi (1.0.4-0ubuntu1) opsi; urgency=low
 
   * Rebuild.
- 
+
  -- Thomas Schmitt <thomas@linuxmuster.net>  Thu, 26 Feb 2015 12:30:13 +0100
 
 linuxmuster-opsi (1.0.4-0ubuntu0) opsi; urgency=low
