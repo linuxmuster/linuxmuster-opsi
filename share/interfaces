@@ -1,0 +1,13 @@
+# template for network interface /etc/network/interfaces.d/linuxmuster
+#
+# thomas@linuxmuster.net
+# 20170717
+#
+
+auto @@iface@@
+iface @@iface@@ inet static
+        address @@opsiip@@
+        netmask @@netmask@@
+        gateway @@gateway@@
+        dns-nameservers @@nameserver@@
+        dns-search localdomain
