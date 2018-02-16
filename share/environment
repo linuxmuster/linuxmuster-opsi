@@ -1,6 +1,6 @@
 # linuxmuster.net environment
 # thomas@linuxmuster.net
-# 20170717
+# 20180216
 #
 
 # get ubuntu version
@@ -23,6 +23,7 @@ ADMINGROUP="opsiadmin"
 
 OPSISYSDIR="/etc/opsi"
 PCKEYS="$OPSISYSDIR/pckeys"
+CONFDPEM="$OPSISYSDIR/opsiconfd.pem"
 OPSICONFIGDIR="/var/lib/opsi/config"
 OPSICLIENTSDIR="$OPSICONFIGDIR/clients"
 OPSICONFIG="$OPSICONFIGDIR/config.ini"
@@ -46,7 +47,14 @@ SUDOERS_TGT="/etc/sudoers"
 PRODCNF_TGT="$OPSISYSDIR/opsi-product-updater.conf"
 PRODCNF_TPL="$SHAREDIR/opsi-product-updater.conf"
 OPSILIST_TPL="$SHAREDIR/opsi.list"
-OPSILIST_TGT="/etc/apt/sources.list.d/opsi.list"
+SOURCESLIST="/etc/apt/sources.list.d"
+OPSILIST_TGT="$SOURCESLIST/opsi.list"
+
+# linuxmuster.net 7
+SSLDIR="/etc/linuxmuster/ssl"
+OPSIKEY="$SSLDIR/opsi.key.pem"
+OPSICERT="$SSLDIR/opsi.cert.pem"
+LMN7LIST="$SOURCESLIST/lmn7.list"
 
 # functions
 

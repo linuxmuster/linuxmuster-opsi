@@ -1,3 +1,9 @@
+linuxmuster-opsi (1.1.0-0ubuntu0) opsi; urgency=low
+
+  * Added support for lmn7.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Fri, 16 Feb 2018 13:12:31 +0100
+
 linuxmuster-opsi (1.0.5-0ubuntu0) opsi; urgency=low
 
   * Added support for Ubuntu 16.04, removed support for 12.04

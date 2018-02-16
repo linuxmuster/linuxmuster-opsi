@@ -3,7 +3,7 @@
 # linuxmuster-opsi
 #
 # thomas@linuxmuster.net
-# 20170717
+# 20180214
 #
 
 # read linuxmuster.net environment
@@ -46,7 +46,7 @@ usage() {
   echo "            /var/lib/linuxmuster/network.settings under"
   echo "            /var/lib/linuxmuster-opsi/settings."
   echo "  network:  Configure network interface. Subsequent options needed."
-  echo "  password: Change opsi admin password."
+  echo "  password: Change opsiadmin password."
   echo "  prepare:  Installs OPSI packages and creates the opsiadmin user."
   echo "  wsimport: Does client import, expects the server file"
   echo "            /etc/linuxmuster/workstations under"
@@ -117,6 +117,7 @@ bailout(){
 # upgrade the system in case of prepare
 dist_upgrade(){
  apt-get update
+ export DEBIAN_FRONTEND=noninteractive
  apt-get -y dist-upgrade
  if ! pkgs_installed; then
   # copy opsi.list
@@ -132,7 +133,6 @@ dist_upgrade(){
   echo
  fi
 }
-[ "$action" = "prepare" ] && dist_upgrade | tee -a "$LOGFILE"
 
 
 # source action script

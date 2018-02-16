@@ -2,8 +2,11 @@
 # linuxmuster-opsi-prepare
 #
 # thomas@linuxmuster.net
-# 20170717
+# 20180214
 #
+
+# upgrade and install necessary pkgs
+dist_upgrade | tee -a "$LOGFILE"
 
 # hostname must be opsi
 hostname -b opsi
@@ -50,8 +53,10 @@ if ! id "$ADMINUSER" &> /dev/null; then
  useradd -c "OPSI admin user" -g "$ADMINGROUP" -G adm,cdrom,sudo,dip,plugdev,lpadmin,sambashare,pcpatch -m -s /bin/bash "$ADMINUSER" || bailout "Cannot create $ADMINUSER!"
 fi
 
-# set password for opsiadmin
-set_opsipassword || bailout "Opsi password error!"
+# set password for opsiadmin (if not lmn7)
+if [ ! -e "$LMN7LIST" ]; then
+  set_opsipassword || bailout "Opsi password error!"
+fi
 
 echo
 echo "The OPSI system has been successfully prepared."
