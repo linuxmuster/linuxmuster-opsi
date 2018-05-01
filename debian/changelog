@@ -1,3 +1,15 @@
+linuxmuster-opsi (1.2.0-0ubuntu0) opsi; urgency=low
+
+  * environment, set_opsipassword(): added option to set password per cli parameter.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Tue, 01 May 2018 09:32:00 +0200
+
+linuxmuster-opsi (1.1.1-0ubuntu0) opsi; urgency=low
+
+  * deactivated email notification in opsi-product-updater.conf.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Mon, 26 Feb 2018 22:28:25 +0100
+
 linuxmuster-opsi (1.1.0-0ubuntu0) opsi; urgency=low
 
   * Added support for lmn7.

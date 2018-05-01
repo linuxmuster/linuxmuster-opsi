@@ -1,6 +1,6 @@
 # linuxmuster.net environment
 # thomas@linuxmuster.net
-# 20180216
+# 20180501
 #
 
 # get ubuntu version
@@ -76,26 +76,28 @@ getopt() {
 set_opsipassword(){
  id "$ADMINUSER" &> /dev/null || (echo "$ADMINUSER account does not exist!" ; return 1)
  local i
- local password
+ local password="$1"
  local rpassword
  for i in root "$ADMINUSER"; do
-  echo
-  echo "### $i password ###"
-  password=""
-  rpassword=""
-  while [ -z "$password" ]; do
-   stty -echo
-   read -p "Please enter password for $i: " password; echo
-   stty echo
-   stty -echo
-   read -p "Please re-enter password for $i: " rpassword; echo
-   stty echo
-   if [ "$password" != "$rpassword" ]; then
-    echo "Passwords do not match!"
-    password=""
-   fi
+  if [ -z "$password" ]; then
+   echo
+   echo "### $i password ###"
+   password=""
    rpassword=""
-  done
+   while [ -z "$password" ]; do
+    stty -echo
+    read -p "Please enter password for $i: " password; echo
+    stty echo
+    stty -echo
+    read -p "Please re-enter password for $i: " rpassword; echo
+    stty echo
+    if [ "$password" != "$rpassword" ]; then
+     echo "Passwords do not match!"
+     password=""
+    fi
+    rpassword=""
+   done
+  fi
   echo "${i}:${password}" | chpasswd || (echo "Failed to set unix password for $i!" ; return 1)
  done
  echo -e "${password}\n${password}\n" | smbpasswd -a -s "$ADMINUSER" || (echo "Failed to set samba password!" ; return 1)
