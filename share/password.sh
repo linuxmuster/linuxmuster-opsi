@@ -2,7 +2,7 @@
 # linuxmuster-opsi-password
 #
 # thomas@linuxmuster.net
-# 24.02.2014
+# 20180501
 #
 
-set_opsipassword || bailout "Opsi password error!"
+set_opsipassword "$password" || bailout "Opsi password error!"

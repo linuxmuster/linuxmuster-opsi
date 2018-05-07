@@ -1,8 +1,14 @@
+linuxmuster-opsi (1.2.1-0ubuntu0) opsi; urgency=low
+
+  * updated uib repository paths.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Mon, 07 May 2018 09:46:01 +0200
+
 linuxmuster-opsi (1.2.0-0ubuntu0) opsi; urgency=low
 
   * environment, set_opsipassword(): added option to set password per cli parameter.
 
- -- Thomas Schmitt <thomas@linuxmuster.net>  Tue, 01 May 2018 09:32:00 +0200
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Tue, 01 May 2018 10:37:56 +0200
 
 linuxmuster-opsi (1.1.1-0ubuntu0) opsi; urgency=low
 

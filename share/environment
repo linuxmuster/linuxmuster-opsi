@@ -77,30 +77,29 @@ set_opsipassword(){
  id "$ADMINUSER" &> /dev/null || (echo "$ADMINUSER account does not exist!" ; return 1)
  local i
  local password="$1"
- local rpassword
- for i in root "$ADMINUSER"; do
-  if [ -z "$password" ]; then
-   echo
-   echo "### $i password ###"
-   password=""
+ local rpassword=""
+ if [ -z "$password" ]; then
+  while [ -z "$password" ]; do
+   stty -echo
+   read -p "Please enter admin password: " password; echo
+   stty echo
+   stty -echo
+   read -p "Please re-enter admin password: " rpassword; echo
+   stty echo
+   if [ "$password" != "$rpassword" ]; then
+    echo "Passwords do not match!"
+    password=""
+   fi
    rpassword=""
-   while [ -z "$password" ]; do
-    stty -echo
-    read -p "Please enter password for $i: " password; echo
-    stty echo
-    stty -echo
-    read -p "Please re-enter password for $i: " rpassword; echo
-    stty echo
-    if [ "$password" != "$rpassword" ]; then
-     echo "Passwords do not match!"
-     password=""
-    fi
-    rpassword=""
-   done
-  fi
+  done
+ fi
+ for i in root "$ADMINUSER"; do
+  echo "Setting password for $i ..."
   echo "${i}:${password}" | chpasswd || (echo "Failed to set unix password for $i!" ; return 1)
  done
+ echo "Setting $ADMINUSER samba password ..."
  echo -e "${password}\n${password}\n" | smbpasswd -a -s "$ADMINUSER" || (echo "Failed to set samba password!" ; return 1)
+ echo "Setting $ADMINUSER pcpatch password ..."
  echo -e "${password}\n${password}\n" | opsi-admin -d task setPcpatchPassword || (echo "Failed to set pcpatch password!" ; return 1)
  password=""
  return 0

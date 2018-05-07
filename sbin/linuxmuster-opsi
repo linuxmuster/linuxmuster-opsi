@@ -27,7 +27,7 @@ header(){
 usage() {
   header "usage"
   echo "linuxmuster-opsi --setup [--first]"
-  echo "                 --password"
+  echo "                 --password=<password>"
   echo "                 --prepare"
   echo "                 --wsimport"
   echo "                 --network"
@@ -46,7 +46,7 @@ usage() {
   echo "            /var/lib/linuxmuster/network.settings under"
   echo "            /var/lib/linuxmuster-opsi/settings."
   echo "  network:  Configure network interface. Subsequent options needed."
-  echo "  password: Change opsiadmin password."
+  echo "  password: Change opsiadmin password. If no value is set passwords were asked."
   echo "  prepare:  Installs OPSI packages and creates the opsiadmin user."
   echo "  wsimport: Does client import, expects the server file"
   echo "            /etc/linuxmuster/workstations under"
@@ -79,7 +79,10 @@ usage() {
 # get action
 [ -n "$wsimport" ] && action="wsimport"
 [ -n "$prepare" ] && action="prepare"
-[ -n "$password" ] && action="password"
+if [ -n "$password" ]; then
+  action="password"
+  [ "$password" = "password" ] && password=""
+fi
 [ -n "$setup" ] && action="setup"
 [ -n "$network" ] && action="network"
 
