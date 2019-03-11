@@ -2,23 +2,13 @@
 # linuxmuster-opsi-prepare
 #
 # thomas@linuxmuster.net
-# 20180214
+# 20190311
 #
 
-# upgrade and install necessary pkgs
-dist_upgrade | tee -a "$LOGFILE"
-
-# hostname must be opsi
-hostname -b opsi
-echo opsi > /etc/hostname
-sed -e "s|@@domainname@@|localhost.localdomain|g" "$HOSTS_TPL" > "$HOSTS_TGT" || RC="1"
+# upgrade and install necessary pkgs if not done before
+pkgs_installed || dist_upgrade | tee -a "$LOGFILE"
 
 # copy initial configs
-# samba
-if ! grep -q ^"\[opsi" "$SMBCONF_TGT"; then
- echo "Updating $SMBCONF_TGT."
- cp "$SMBCONF_TGT" "$SMBCONF_TPL" || RC="1"
-fi
 
 # sudoers
 if ! grep -q ^opsiconfd "$SUDOERS_TGT"; then
@@ -27,13 +17,10 @@ if ! grep -q ^opsiconfd "$SUDOERS_TGT"; then
  chmod 440 "$SUDOERS_TGT"
 fi
 
-# tftp
-if ! grep -q ^tftp "$INETDCONF_TGT"; then
- echo "Updating $INETDCONF_TGT."
- cp "$INETDCONF_TPL" "$INETDCONF_TGT" || RC="1"
- service openbsd-inetd stop &> /dev/null
- service openbsd-inetd start
-fi
+# opsi configs
+cp "$SHAREDIR/dbp.repo" "$OPSIREPOHOOKS"
+cp "$SHAREDIR/dispatch.conf" "$OPSIBCKNDMGR"
+sed -i 's|^autoInstall .*|autoInstall = true|' "$OPSIWINREPO"
 
 # opsi setup stuff
 opsi-setup --auto-configure-samba || RC="1"
@@ -50,12 +37,7 @@ service opsipxeconfd start || RC="1"
 if ! id "$ADMINUSER" &> /dev/null; then
  echo
  echo "Creating $ADMINUSER account ..."
- useradd -c "OPSI admin user" -g "$ADMINGROUP" -G adm,cdrom,sudo,dip,plugdev,lpadmin,sambashare,pcpatch -m -s /bin/bash "$ADMINUSER" || bailout "Cannot create $ADMINUSER!"
-fi
-
-# set password for opsiadmin (if not lmn7)
-if [ ! -e "$LMN7LIST" ]; then
-  set_opsipassword || bailout "Opsi password error!"
+ useradd -c "OPSI admin user" -g "$ADMINGROUP" -G adm,cdrom,sudo,dip,plugdev,sambashare,pcpatch -m -s /bin/bash "$ADMINUSER" || bailout "Cannot create $ADMINUSER!"
 fi
 
 echo

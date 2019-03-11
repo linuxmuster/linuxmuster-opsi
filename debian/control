@@ -8,7 +8,7 @@ Standards-Version: 3.6.0
 Package: linuxmuster-opsi
 Architecture: all
 Priority: optional
-Depends: ${shlibs:Depends}, ${misc:Depends}, ipcalc, sed, grep, debconf, openbsd-inetd, openssl, openssh-client, iproute, net-tools, bind9-host, hostname, mawk, bash, passwd
+Depends: ipcalc, sed, grep, debconf, openssl, openssh-client, net-tools, bind9-host, hostname, mawk, bash, passwd
 Conflicts: linuxmuster-base
 Essential: no
 Description: opsi configuration scripts for linuxmuster-net on use on opsi-server.

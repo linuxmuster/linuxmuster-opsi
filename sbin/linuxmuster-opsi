@@ -3,7 +3,7 @@
 # linuxmuster-opsi
 #
 # thomas@linuxmuster.net
-# 20180214
+# 20190308
 #
 
 # read linuxmuster.net environment
@@ -28,14 +28,9 @@ usage() {
   header "usage"
   echo "linuxmuster-opsi --setup [--first]"
   echo "                 --password=<password>"
+  echo "                 --install"
   echo "                 --prepare"
   echo "                 --wsimport"
-  echo "                 --network"
-  echo "                   --iface=<interface>"
-  echo "                   --opsiip=<ipaddress>"
-  echo "                   --netmask=<netmask>"
-  echo "                   --gateway=<ipaddress>"
-  echo "                   --nameserver=<ipaddress>"
   echo "                 --reboot"
   echo "                 --quiet"
   echo "                 --help"
@@ -45,9 +40,9 @@ usage() {
   echo "            with forced certificate creation. Expects the server file"
   echo "            /var/lib/linuxmuster/network.settings under"
   echo "            /var/lib/linuxmuster-opsi/settings."
-  echo "  network:  Configure network interface. Subsequent options needed."
   echo "  password: Change opsiadmin password. If no value is set passwords were asked."
-  echo "  prepare:  Installs OPSI packages and creates the opsiadmin user."
+  echo "  install:  Installs necessary OPSI packages."
+  echo "  prepare:  Initial opsi configuration. Install has to be invoked before."
   echo "  wsimport: Does client import, expects the server file"
   echo "            /etc/linuxmuster/workstations under"
   echo "            /var/lib/linuxmuster-opsi/workstations."
@@ -64,17 +59,16 @@ usage() {
 [ -n "$wsimport" -a -n "$setup" ] && usage
 [ -n "$wsimport" -a -n "$first" ] && usage
 [ -n "$wsimport" -a -n "$password" ] && usage
-[ -n "$wsimport" -a -n "$network" ] && usage
+[ -n "$wsimport" -a -n "$install" ] && usage
 [ -n "$prepare" -a -n "$setup" ] && usage
 [ -n "$prepare" -a -n "$first" ] && usage
 [ -n "$prepare" -a -n "$password" ] && usage
-[ -n "$prepare" -a -n "$network" ] && usage
+[ -n "$prepare" -a -n "$install" ] && usage
 [ -n "$password" -a -n "$setup" ] && usage
 [ -n "$password" -a -n "$first" ] && usage
-[ -n "$password" -a -n "$network" ] && usage
-[ -n "$network" -a -n "$setup" ] && usage
-[ -n "$network" -a -n "$first" ] && usage
-[ -z "$wsimport" -a -z "$prepare" -a -z "$setup" -a -z "$password" -a -z "$network" ] && usage
+[ -n "$password" -a -n "$install" ] && usage
+[ -n "$setup" -a -n "$install" ] && usage
+[ -z "$wsimport" -a -z "$prepare" -a -z "$setup" -a -z "$password" -a -z "$install" ] && usage
 
 # get action
 [ -n "$wsimport" ] && action="wsimport"
@@ -84,7 +78,7 @@ if [ -n "$password" ]; then
   [ "$password" = "password" ] && password=""
 fi
 [ -n "$setup" ] && action="setup"
-[ -n "$network" ] && action="network"
+[ -n "$install" ] && action="install"
 
 # logging
 LOGFILE="/var/log/linuxmuster-opsi-$action.log"
@@ -139,7 +133,11 @@ dist_upgrade(){
 
 
 # source action script
-(. $SHAREDIR/$action.sh || RC="1") | tee -a "$LOGFILE"
+if [ "$action" = "install" ]; then
+  (dist_upgrade || RC="1") | tee -a "$LOGFILE"
+else
+  (. $SHAREDIR/$action.sh || RC="1") | tee -a "$LOGFILE"
+fi
 
 # delete pid file
 rm -f $mypidfile

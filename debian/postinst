@@ -2,7 +2,7 @@
 # postinst script for linuxmuster-opsi
 #
 # thomas@linuxmuster.net
-# 20180507
+# 20190308
 # GPL v3
 #
 # see: dh_installdeb(1)
@@ -26,19 +26,6 @@ set -e
 case "$1" in
   configure)
     [ -d "$DATADIR" ] || mkdir "$DATADIR"
-    # repair outdated uib repo paths
-    if grep -q ^"\[repository_uib\]" "$PRODCNF_TGT"; then
-      repo_new="dirs = opsi_stable/products/windows/localboot, opsi_stable/products/windows/netboot"
-      if ! grep -q "$repo_new" "$PRODCNF_TGT"; then
-        # package version
-        update_version="1.2.1"
-        if [ ! -e "${PRODCNF_TGT}_${update_version}" ]; then
-          echo "Updating uib repo paths."
-          cp "$PRODCNF_TGT" "${PRODCNF_TGT}_${update_version}"
-          sed -i "s|^dirs = opsi_stable/.*|$repo_new|g" "$PRODCNF_TGT"
-        fi
-      fi
-    fi
   ;;
 
   abort-upgrade|abort-remove|abort-deconfigure)

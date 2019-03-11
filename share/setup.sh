@@ -2,7 +2,7 @@
 # linuxmuster-opsi-setup
 #
 # thomas@linuxmuster.net
-# 20180216
+# 20190308
 #
 
 # read linuxmuster.net environment
@@ -41,8 +41,6 @@ openssl_conf="/var/tmp/opsissl.cnf.$$"
 
 set_fqdn(){
  local RC="0"
- echo "opsi" > /etc/hostname || RC="1"
- sed -e "s|@@domainname@@|$domainname|g" "$HOSTS_TPL" > "$HOSTS_TGT" || RC="1"
  if [ -e "$PCKEYS" ]; then
   sed -i "$PCKEYS" -e "s|$MYFQDN|opsi.$domainname|g" -e "s|\..*\:|\.$domainname\:|g" || RC="1"
  else
@@ -166,28 +164,8 @@ if [ "$MYFQDN" != "opsi.$domainname" ]; then
  set_fqdn || RC="1"
 fi
 
-# set domainname in dns search
-if [ -s "$IFACES_TGT" ]; then
-  if ! grep -w dns-search "$IFACES_TGT" | grep -q "$domainname"; then
-    sed -i "s|dns-search .*|dns-search $domainname|g" "$IFACES_TGT" || RC="1"
-    reboot="yes"
-  fi
-fi
-
 # set ip in config.ini
 set_ip || RC="1"
-
-# update product config
-cp "$PRODCNF_TGT" "${PRODCNF_TGT}.linuxmuster-backup"
-if [ -n "$first" ]; then
- sed -e "s|@@serverip@@|$serverip|g
-         s|@@admin@@|$admin|g
-         s|@@domainname@@|$domainname|g" "$PRODCNF_TPL" > "$PRODCNF_TGT" || RC="1"
-else
- sed -e "s|^smtphost .*|smtphost = $mailip|
-         s|^sender .*|sender = opsi-product-updater@$domainname|
-         s|^receivers .*|receivers = ${admin}@$domainname|" -i "$PRODCNF_TGT" || RC="1"
-fi
 
 # repair opsi permissions
 opsi-setup --set-rights "$OPSISYSDIR" || RC="1"

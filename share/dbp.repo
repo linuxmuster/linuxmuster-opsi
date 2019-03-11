@@ -1,0 +1,38 @@
+; disconnected-by-peer repo
+; thomas@linuxmuster.net
+; 20190308
+;
+
+[repository_dbp]
+; Activate/deactivate the repository
+active = true
+; If the repository is an opsi depot, opsiDepotId should be set
+; In that case it is not required (but allowed) to set baseUrl, dirs, username and password
+opsiDepotId =
+; The base url of a product package repository
+baseUrl = http://opsi.disconnected-by-peer.at
+; Comma separated directories to include in search for product packages
+; Use / if search should be done in baseUrl
+; dirs = public/release, public/testing, restricted/release, restricted/testing
+dirs = public/release
+; Comma separated list of regular expressions
+; If a product package file matches one of these regular expressions it will not be downloaded
+;excludes = ^win.*
+excludes =
+; Username for connection to repository
+; username = dbp
+; Password for connection to repository
+; password = dbp
+; AutoInstall will be checked if a product package is found on the repository
+; and the product is not yet installed on the local depot
+autoInstall = true
+; AutoUpdate will be checked if a product is already installed on the local depot
+; and a more recent product version is found in the repository
+autoUpdate = true
+; If autoSetup is set to true, the action request "setup" will be set for every updated product
+; on all clients of the local depot where the installation status of the product is "installed"
+autoSetup = false
+; Set True if you want only Download packages without installation
+onlyDownload = false
+; Set Proxy handler like: http://10.10.10.1:8080
+proxy =

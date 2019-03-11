@@ -1,20 +1,17 @@
 # linuxmuster.net environment
 # thomas@linuxmuster.net
-# 20180501
+# 20190311
 #
 
 # get ubuntu version
-for i in 14 16; do
- if grep -q "${i}.04" /etc/issue; then
-  ISSUE="${i}.04"
-  break
- fi
-done
-if [ -z "$ISSUE" ]; then
- echo "Error: Incompatible ubuntu version!"
- exit 1
+SUPPORTED_VERSION="18.04"
+ISSUE="$(grep ^Ubuntu /etc/issue | awk '{ print $2 }')"
+if ! echo "$ISSUE" | grep -q "$SUPPORTED_VERSION"; then
+ echo "Incompatible ubuntu version $ISSUE!"
+ exit 0
 else
  echo "Ubuntu $ISSUE detected."
+ ISSUE="$SUPPORTED_VERSION"
 fi
 
 # variables
@@ -22,30 +19,23 @@ ADMINUSER="opsiadmin"
 ADMINGROUP="opsiadmin"
 
 OPSISYSDIR="/etc/opsi"
+OPSIREPOHOOKS="$OPSISYSDIR/package-updater.repos.d"
+OPSIWINREPO="$OPSIREPOHOOKS/uib-windows.repo"
+OPSIBCKNDMGR="$OPSISYSDIR/backendManager"
 PCKEYS="$OPSISYSDIR/pckeys"
 CONFDPEM="$OPSISYSDIR/opsiconfd.pem"
 OPSICONFIGDIR="/var/lib/opsi/config"
 OPSICLIENTSDIR="$OPSICONFIGDIR/clients"
 OPSICONFIG="$OPSICONFIGDIR/config.ini"
-OPSIPKGS="opsi-depotserver opsi-configed opsi-atftpd"
-OPSIKEYURL="http://download.opensuse.org/repositories/home:/uibmz:/opsi:/opsi40/xUbuntu_${ISSUE}/Release.key"
+OPSIPKGS="opsi-depotserver opsi-configed opsi-tftpd-hpa"
+OPSIKEYURL="http://download.opensuse.org/repositories/home:/uibmz:/opsi:/4.1:/stable/xUbuntu_${ISSUE}/Release.key"
 
 SHAREDIR="/usr/share/linuxmuster-opsi"
 DATADIR="/var/lib/linuxmuster-opsi"
 WIMPORTDATA="$DATADIR/workstations"
 SETTINGS="$DATADIR/settings"
-IFACES_TGT="/etc/network/interfaces.d/linuxmuster"
-IFACES_TPL="$SHAREDIR/interfaces"
-HOSTS_TGT="/etc/hosts"
-HOSTS_TPL="$SHAREDIR/hosts"
-INETDCONF_TPL="$SHAREDIR/inetd.conf"
-INETDCONF_TGT="/etc/inetd.conf"
-SMBCONF_TGT="/etc/samba/smb.conf"
-SMBCONF_TPL="$SHAREDIR/smb.conf"
 SUDOERS_TPL="$SHAREDIR/sudoers"
 SUDOERS_TGT="/etc/sudoers"
-PRODCNF_TGT="$OPSISYSDIR/opsi-product-updater.conf"
-PRODCNF_TPL="$SHAREDIR/opsi-product-updater.conf"
 OPSILIST_TPL="$SHAREDIR/opsi.list"
 SOURCESLIST="/etc/apt/sources.list.d"
 OPSILIST_TGT="$SOURCESLIST/opsi.list"
@@ -54,7 +44,6 @@ OPSILIST_TGT="$SOURCESLIST/opsi.list"
 SSLDIR="/etc/linuxmuster/ssl"
 OPSIKEY="$SSLDIR/opsi.key.pem"
 OPSICERT="$SSLDIR/opsi.cert.pem"
-LMN7LIST="$SOURCESLIST/lmn7.list"
 
 # functions
 

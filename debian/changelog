@@ -1,3 +1,30 @@
+linuxmuster-opsi (1.3.3-0ubuntu0) opsi; urgency=low
+
+  * added upgrade script.
+  * removed lmn62 code.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Mon, 11 Mar 2019 22:07:18 +0100
+
+linuxmuster-opsi (1.3.2-0ubuntu0) opsi; urgency=low
+
+  * prepare: sets autoInstall = true in uib-windows.repo.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Mon, 11 Mar 2019 15:12:05 +0100
+
+linuxmuster-opsi (1.3.1-0ubuntu0) opsi; urgency=low
+
+  * more modifications due to opsi version 4.1 and ubuntu version 18.04.
+  * removed last remnants of network setup.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Fri, 08 Mar 2019 21:38:12 +0100
+
+linuxmuster-opsi (1.3.0-0ubuntu0) opsi; urgency=low
+
+  * switched to opsi version 4.1 and ubuntu version 18.04.
+  * removed network and hostname setup (now done by linuxmuster-prepare).
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Tue, 22 Jan 2019 15:05:23 +0100
+
 linuxmuster-opsi (1.2.1-0ubuntu0) opsi; urgency=low
 
   * updated uib repository paths.

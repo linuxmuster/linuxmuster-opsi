@@ -1,2 +1,2 @@
-deb http://download.opensuse.org/repositories/home:/uibmz:/opsi:/opsi40/xUbuntu_@@issue@@ ./
-deb-src http://download.opensuse.org/repositories/home:/uibmz:/opsi:/opsi40/xUbuntu_@@issue@@ ./
+deb http://download.opensuse.org/repositories/home:/uibmz:/opsi:/4.1:/stable/xUbuntu_@@issue@@ ./
+deb-src http://download.opensuse.org/repositories/home:/uibmz:/opsi:/4.1:/stable/xUbuntu_@@issue@@ ./
