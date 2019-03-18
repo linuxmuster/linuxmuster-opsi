@@ -1,3 +1,10 @@
+linuxmuster-opsi (1.4.0-0ubuntu0) opsi; urgency=low
+
+  * added helper script opsiSetup.py to restore opsi product client state and force
+    certain products to setup if requested after linbo sync.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Thu, 14 Mar 2019 09:51:05 +0100
+
 linuxmuster-opsi (1.3.3-0ubuntu0) opsi; urgency=low
 
   * added upgrade script.
