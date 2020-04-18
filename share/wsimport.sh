@@ -2,7 +2,7 @@
 # sync workstations with opsi management
 #
 # thomas@linuxmuster.net
-# 27.02.2014
+# 20200418
 #
 
 
@@ -72,6 +72,8 @@ grep ^[a-z0-9] "$WIMPORTDATA" | while read data; do
 
  mac="$(echo "$data" | awk -F\; '{ print $4 }' | tr A-Z a-z)"
  ip="$(echo "$data" | awk -F\; '{ print $5 }' | tr A-Z a-z)"
+ # dynamic ip client support
+ [ "$ip" = "dhcp" ] && ip=""
  inifile="$OPSICLIENTSDIR/$pcname.$domainname.ini"
  # remove opsi clients whose mac or ip address has changed
  # note: this client has to be synchronized with linbo afterwards to get new key and current opsi status
@@ -81,7 +83,8 @@ grep ^[a-z0-9] "$WIMPORTDATA" | while read data; do
   if ! grep ^hardwareaddress "$inifile" | grep -qi "$mac"; then
    echo "MAC address of client $pcname has changed!"
    CHANGED="yes"
-  elif ! grep ^ipaddress "$inifile" | grep -q "$ip"; then
+ # only if ip address is set (dynamic ip  client support)
+ elif [ -n "$ip" ] && ! grep ^ipaddress "$inifile" | grep -q "$ip"; then
    echo "IP address of client $pcname has changed!"
    CHANGED="yes"
   fi

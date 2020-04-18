@@ -1,3 +1,9 @@
+linuxmuster-opsi (1.5.0-0ubuntu0) opsi; urgency=low
+
+  * added support for dynamic ip clients.
+
+ -- Thomas Schmitt <thomas@linuxmuster.net>  Sat, 18 Apr 2020 22:04:24 +0200
+
 linuxmuster-opsi (1.4.0-0ubuntu0) opsi; urgency=low
 
   * added helper script opsiSetup.py to restore opsi product client state and force
